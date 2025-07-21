@@ -35,36 +35,15 @@ const Submissions: React.FC = () => {
       await fetchStaticData(targetFacultyId);
 
       // Set up real-time listener for submissions
-      const submissionsQuery = query(
-        collection(db, 'submissions'), 
-        orderBy('submittedAt', 'desc')
-      );
-      
-      const unsubscribeSubmissions = onSnapshot(submissionsQuery, (snapshot) => {
-        const submissionsData = snapshot.docs.map(doc => ({
-          id: doc.id,
+      // Listen to ALL submissions, then filter on client side
+      const submissionsQuery = query(collection(db, 'submissions'), orderBy('submittedAt', 'desc'));
           ...doc.data(),
           submittedAt: doc.data().submittedAt?.toDate() || new Date(),
           approvedAt: doc.data().approvedAt?.toDate()
         })) as StudentSubmission[];
 
-        // Filter submissions to only include those for this faculty's experiments
-        const experimentIds = experiments.map(exp => exp.id);
-        const facultySubmissions = submissionsData.filter(sub =>
-          experimentIds.includes(sub.experimentId)
-        );
-
-        setSubmissions(facultySubmissions);
-        console.log('Real-time update: Submissions updated for faculty');
-      });
-
-      // Cleanup function
-      return () => {
-        unsubscribeSubmissions();
-      };
-    } catch (error) {
-      console.error('Error setting up real-time listeners:', error);
-    }
+        // Store all submissions first, filtering will happen in filterSubmissions
+        setSubmissions(submissionsData);
   };
 
   const fetchStaticData = async (targetFacultyId: string) => {
