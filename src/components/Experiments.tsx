@@ -29,7 +29,8 @@
 +  useEffect(() => {
 +    const timer = setTimeout(() => {
 +      refreshExperiments();
-+    }, 1000);
++    }, 100
+  }0);
 +
 +    return () => clearTimeout(timer);
 +  }, [userProfile]);

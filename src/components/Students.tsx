@@ -39,4 +39,5 @@
 +    return () => clearTimeout(timer);
 +  }, [userProfile]);
 +
-   const setupRealtimeListeners = () => {
+   const setupR
+   }ealtimeListeners = () => {
